@@ -1,0 +1,24 @@
+package com.treino.app;
+
+import com.treino.app.model.Usuario;
+import com.treino.app.util.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+
+        Usuario usuario = new Usuario("Kaio", "kaio@email.com");
+
+        session.persist(usuario);
+
+        transaction.commit();
+        session.close();
+
+        System.out.println("Salvo com sucesso!");
+    }
+}

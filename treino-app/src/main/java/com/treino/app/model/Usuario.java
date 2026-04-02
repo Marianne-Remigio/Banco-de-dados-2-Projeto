@@ -1,6 +1,7 @@
 package com.treino.app.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 public class Usuario {
@@ -11,6 +12,9 @@ public class Usuario {
 
     private String nome;
     private String email;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<Treino> treinos;
 
     public Usuario() {}
 
@@ -37,5 +41,13 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Treino> getTreinos(){
+        return treinos;
+    }
+
+    public void setTreinos(List<Treino> treinos) {
+        this.treinos = treinos;
     }
 }

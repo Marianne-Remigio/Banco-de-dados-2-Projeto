@@ -1,0 +1,21 @@
+<hibernate-configuration>
+    <session-factory>
+
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/treino_db</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.connection.password">1592</property>
+
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.show_sql">true</property>
+
+        <!-- ENTIDADES -->
+        <mapping class="com.treino.app.model.Usuario"/>
+        <mapping class="com.treino.app.model.Treino"/>
+        <mapping class="com.treino.app.model.Exercicio"/>
+        <mapping class="com.treino.app.model.ExecucaoExercicio"/>
+
+    </session-factory>
+</hibernate-configuration>

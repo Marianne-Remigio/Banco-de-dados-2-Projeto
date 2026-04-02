@@ -12,6 +12,7 @@ public class Treino {
     private String nome;
 
     @ManyToOne
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
     public Treino() {}

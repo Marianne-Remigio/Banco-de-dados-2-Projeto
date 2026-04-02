@@ -12,7 +12,7 @@ public class Main {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
-        Usuario usuario = new Usuario("Kaio", "kaio@email.com");
+        Usuario usuario = new Usuario("pedro", "pedro@email.com");
 
         session.persist(usuario);
 

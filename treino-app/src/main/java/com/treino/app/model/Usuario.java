@@ -1,6 +1,8 @@
 package com.treino.app.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -13,8 +15,8 @@ public class Usuario {
     private String nome;
     private String email;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private List<Treino> treinos;
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Treino> treinos = new ArrayList<>();
 
     public Usuario() {}
 
@@ -44,10 +46,18 @@ public class Usuario {
     }
 
     public List<Treino> getTreinos(){
-        return treinos;
+        return Collections.unmodifiableList(treinos);
     }
 
-    public void setTreinos(List<Treino> treinos) {
-        this.treinos = treinos;
+    // adiciona o treino
+    public void addTreino(Treino treino) {
+        treinos.add(treino);
+        treino.setUsuario(this);
+    }
+
+    // remove o treino 
+    public void removeTreino(Treino treino) {
+        treinos.remove(treino);
+        treino.setUsuario(null);
     }
 }

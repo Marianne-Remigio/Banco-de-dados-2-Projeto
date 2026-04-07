@@ -21,8 +21,8 @@ public class Usuario {
     public Usuario() {}
 
     public Usuario(String nome, String email){
-        this.nome = nome;
-        this.email = email;
+        setNome(nome);   // validação aplicada
+        setEmail(email); // já deixa consistente
     }
 
     public Long getId() {
@@ -34,6 +34,9 @@ public class Usuario {
     }
 
     public void setNome(String nome) {
+        if (nome == null || !nome.matches("[a-zA-ZÀ-ÿ ]+")) {
+            throw new IllegalArgumentException("Nome do usuário inválido");
+        }
         this.nome = nome;
     }
 
@@ -42,6 +45,9 @@ public class Usuario {
     }
 
     public void setEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email inválido");
+        }
         this.email = email;
     }
 
@@ -55,7 +61,7 @@ public class Usuario {
         treino.setUsuario(this);
     }
 
-    // remove o treino 
+    // remove o treino
     public void removeTreino(Treino treino) {
         treinos.remove(treino);
         treino.setUsuario(null);

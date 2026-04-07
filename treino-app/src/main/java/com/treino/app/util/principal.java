@@ -8,7 +8,7 @@ import org.hibernate.Transaction;
 import java.util.Scanner;
 import java.util.Locale;
 
-public class Principal {
+public class principal {
 
     public static void main(String[] args) {
 

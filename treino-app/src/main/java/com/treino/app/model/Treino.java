@@ -24,8 +24,8 @@ public class Treino {
     public Treino() {}
 
     public Treino(String nome, Usuario usuario){
-        this.nome = nome;
-        this.usuario = usuario;
+        setNome(nome);         // validação aplicada
+        setUsuario(usuario);   // mantém consistência
     }
 
     public Long getId() {
@@ -37,6 +37,9 @@ public class Treino {
     }
 
     public void setNome(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome do treino inválido");
+        }
         this.nome = nome;
     }
 
@@ -45,6 +48,9 @@ public class Treino {
     }
 
     public void setUsuario(Usuario usuario) {
+        if (usuario == null) {
+            throw new IllegalArgumentException("Treino deve ter um usuário");
+        }
         this.usuario = usuario;
     }
 

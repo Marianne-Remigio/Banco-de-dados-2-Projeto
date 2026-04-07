@@ -1,9 +1,6 @@
 package com.treino.app.util;
 
-import com.treino.app.model.ExecucaoExercicio;
-import com.treino.app.model.Exercicio;
-import com.treino.app.model.Treino;
-import com.treino.app.model.Usuario;
+import com.treino.app.model.*;
 import com.treino.app.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -11,62 +8,87 @@ import org.hibernate.Transaction;
 import java.util.Scanner;
 import java.util.Locale;
 
-public class principal {
+public class Principal {
 
     public static void main(String[] args) {
 
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-
+        Transaction transaction = null;
         Scanner sc = new Scanner(System.in);
         Locale.setDefault(Locale.CANADA);
 
-        Usuario usuario = new Usuario();
-        Treino treino = new Treino();
-        Exercicio exercicio = new Exercicio();
-        ExecucaoExercicio execucaoExercicio = new ExecucaoExercicio();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-        System.out.println("Digite o nome do usuario: ");
-        usuario.setNome(sc.nextLine());
+            transaction = session.beginTransaction();
 
-        System.out.println("Digite o e-mail do usuario: ");
-        usuario.setEmail(sc.nextLine());
+            // coloca as informações ao vivo pro teste
+            System.out.println("Digite o nome do usuario: ");
+            String nome = sc.nextLine();
 
-        System.out.println("Digite o nome do treino: ");
-        treino.setNome(sc.nextLine());
+            System.out.println("Digite o e-mail do usuario: ");
+            String email = sc.nextLine();
 
-        System.out.println("Digite o nome do exercicio: ");
-        exercicio.setNome(sc.nextLine());
+            Usuario usuario = new Usuario(nome, email);
 
-        System.out.println("Digite o número de séries: ");
-        execucaoExercicio.setSeries(sc.nextInt());
+            System.out.println("Digite o nome do treino: ");
+            String nomeTreino = sc.nextLine();
 
-        System.out.println("Digite o número de repetições do exercício: ");
-        execucaoExercicio.setRepeticoes(sc.nextInt());
+            Treino treino = new Treino(nomeTreino, usuario);
+            usuario.addTreino(treino);
 
-        System.out.println("Digite o valor da carga do exercicio: ");
-        execucaoExercicio.setCarga(sc.nextDouble());
+            System.out.println("Digite o nome do exercicio: ");
+            String nomeEx = sc.nextLine();
 
-        treino.setUsuario(usuario);
+            Exercicio exercicio = new Exercicio(nomeEx);
+            session.persist(exercicio); 
 
-        execucaoExercicio.setTreino(treino);
-        execucaoExercicio.setExercicio(exercicio);
+            ExecucaoExercicio exec = new ExecucaoExercicio();
 
-        session.persist(usuario);
-        session.persist(treino);
-        session.persist(exercicio);
-        session.persist(execucaoExercicio);
+            System.out.println("Digite o número de séries: ");
+            if (!sc.hasNextInt()) throw new RuntimeException("Séries inválidas");
+            exec.setSeries(sc.nextInt());
 
-        transaction.commit();
+            System.out.println("Digite o número de repetições: ");
+            if (!sc.hasNextInt()) throw new RuntimeException("Repetições inválidas");
+            exec.setRepeticoes(sc.nextInt());
 
-        session.createQuery("from Treino", Treino.class)
-                .list()
-                .forEach(t -> {
-                    System.out.println("\nTreino: " + t.getNome());
-                    System.out.println("Usuario: " + t.getUsuario().getNome());
-                });
+            System.out.println("Digite a carga: ");
+            if (!sc.hasNextDouble()) throw new RuntimeException("Carga inválida");
+            exec.setCarga(sc.nextDouble());
 
-        session.close();
+            exec.setExercicio(exercicio);
+            treino.addExecucao(exec);
+
+            // persistencia
+            session.persist(usuario);
+
+            transaction.commit();
+
+            // consulta dos dados
+            session.createQuery("from Treino", Treino.class)
+                    .list()
+                    .forEach(t -> {
+                        System.out.println("\nTreino: " + t.getNome());
+                        System.out.println("Usuario: " + t.getUsuario().getNome());
+
+                        t.getExecucoes().forEach(e ->
+                                System.out.println(
+                                        "  -> " + e.getOrdem() +
+                                        " | " + e.getExercicio().getNome() +
+                                        " | " + e.getSeries() + "x" + e.getRepeticoes() +
+                                        " | " + e.getCarga() + "kg"
+                                )
+                        );
+                    });
+
+        } catch (Exception e) {
+
+            if (transaction != null) {
+                transaction.rollback();
+            }
+
+            System.out.println("Erro na execução: " + e.getMessage());
+        }
+
         sc.close();
     }
 }
